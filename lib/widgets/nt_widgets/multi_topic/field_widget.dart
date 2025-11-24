@@ -587,7 +587,6 @@ class FieldWidget extends NTWidget {
         maxScale: 10,
         minScale: 1,
 
-
         trackpadScrollCausesScale: true,
         child: ListenableBuilder(
           listenable: Listenable.merge(listeners),
@@ -704,7 +703,8 @@ class FieldWidget extends NTWidget {
                 );
 
                 bool isStructObject =
-                    model.isPoseStruct(objectSubscription.topic) || isStructArray;
+                    model.isPoseStruct(objectSubscription.topic) ||
+                    isStructArray;
 
                 if (isStructObject) {
                   isTrajectory =
