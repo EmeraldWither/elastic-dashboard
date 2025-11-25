@@ -56,6 +56,7 @@ class SettingsDialog extends StatefulWidget {
   final FutureOr<void> Function(String? value)? onGridDPIChanged;
   final void Function()? onOpenAssetsFolderPressed;
   final FutureOr<void> Function(bool value)? onAutoSubmitButtonChanged;
+  final FutureOr<void> Function(bool value)? onExpandedWidgetNamesChanged;
 
   const SettingsDialog({
     super.key,
@@ -78,6 +79,7 @@ class SettingsDialog extends StatefulWidget {
     this.onGridDPIChanged,
     this.onOpenAssetsFolderPressed,
     this.onAutoSubmitButtonChanged,
+    this.onExpandedWidgetNamesChanged,
   });
 
   @override
@@ -139,7 +141,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     child: SingleChildScrollView(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxHeight: kIsWeb ? 360 : 415,
+                          maxHeight: kIsWeb ? 415 : 465,
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -455,6 +457,25 @@ class _SettingsDialogState extends State<SettingsDialog> {
         ),
       ],
     ),
+    SizedBox(height: 5,),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Flexible(
+          child: DialogToggleSwitch(
+            initialValue: widget.preferences.getBool(
+              PrefKeys.expandedWidgetNames,
+            ) ??
+                false,
+            label: 'Expanded Default Topic Widgets',
+            onToggle: (value) async {
+              await widget.onExpandedWidgetNamesChanged?.call(value);
+              setState(() {});
+            },
+          ),
+        ),
+      ],
+    )
   ];
 
   List<Widget> _networkTablesSettings() => [

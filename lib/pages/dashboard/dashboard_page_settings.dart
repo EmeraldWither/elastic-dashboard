@@ -50,6 +50,7 @@ mixin DashboardPageSettings on DashboardPageViewModel {
         onLogLevelChanged: changeLogLevel,
         onGridDPIChanged: changeGridDPI,
         onAutoSubmitButtonChanged: changeAutoSubmitButton,
+        onExpandedWidgetNamesChanged: changeExpandedWidgetNames,
         onOpenAssetsFolderPressed: () async {
           Uri uri = Uri.file(
             '${path.dirname(Platform.resolvedExecutable)}/data/flutter_assets/assets/',
@@ -281,6 +282,11 @@ mixin DashboardPageSettings on DashboardPageViewModel {
 
   Future<void> changeAutoSubmitButton(bool value) async {
     await preferences.setBool(PrefKeys.autoTextSubmitButton, value);
+    notifyListeners();
+  }
+
+  Future<void> changeExpandedWidgetNames(bool value) async {
+    await preferences.setBool(PrefKeys.expandedWidgetNames, value);
     notifyListeners();
   }
 

@@ -62,6 +62,8 @@ class Defaults {
   static const double cornerRadius = 15.0;
   static const double defaultPeriod = 0.06;
   static const double defaultGraphPeriod = 0.033;
+
+  static const bool expandedWidgetNames = false;
 }
 
 class PrefKeys {
@@ -83,4 +85,6 @@ class PrefKeys {
   static String gridDpiOverride = 'grid_dpi_override';
   static String windowPosition = 'window_position';
   static String autoTextSubmitButton = 'auto_text_submit_button';
+  static String expandedWidgetNames = 'expanded_widget_names';
+
 }

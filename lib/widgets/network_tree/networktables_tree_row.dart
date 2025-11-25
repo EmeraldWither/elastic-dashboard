@@ -259,12 +259,12 @@ class NetworkTableTreeRow {
 
     double width = NTWidgetRegistry.getDefaultWidth(primary);
     double height = NTWidgetRegistry.getDefaultHeight(primary);
-
+    // print("topic split" + topic.split('/').toString());
     return NTWidgetContainerModel(
       ntConnection: ntConnection,
       preferences: preferences,
       initialPosition: Rect.fromLTWH(0.0, 0.0, width, height),
-      title: rowName,
+      title: preferences.getBool(PrefKeys.expandedWidgetNames)! ? topic.split('/').skip(2).join('/') : rowName,
       childModel: primary,
     );
   }
