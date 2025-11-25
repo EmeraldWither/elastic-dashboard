@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:elastic_dashboard/widgets/draggable_containers/draggable_nt_widget_container.dart';
+import 'package:elastic_dashboard/widgets/draggable_containers/models/nt_widget_container_model.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -365,6 +367,77 @@ void main() {
       await widgetTester.drag(dialogDragHandle, const Offset(100, 0));
       await widgetTester.pumpAndSettle();
     });
+
+    testWidgets('Add widget dialog with expanded name (widgets)', (widgetTester) async {
+      await preferences.setBool(PrefKeys.expandedWidgetNames, true);
+      await pumpDashboardPage(
+        widgetTester,
+        preferences,
+        ntConnection: createMockOnlineNT4(
+          virtualTopics: [
+            NT4Topic(
+              name: '/SmartDashboard/Very Long/Expanded/SuperCool Topic Name',
+              type: NT4Type.int(),
+              properties: {},
+            ),
+          ],
+        ),
+      );
+
+      final addWidget = find.widgetWithText(MenuItemButton, 'Add Widget');
+
+      expect(addWidget, findsOneWidget);
+      expect(find.widgetWithText(DraggableDialog, 'Add Widget'), findsNothing);
+
+      MenuItemButton addWidgetButton =
+      addWidget.evaluate().first.widget as MenuItemButton;
+
+      addWidgetButton.onPressed?.call();
+      await widgetTester.pumpAndSettle();
+
+      expect(
+        find.widgetWithText(DraggableDialog, 'Add Widget'),
+        findsOneWidget,
+      );
+
+      final smartDashboardTile = find.widgetWithText(
+        TreeTile,
+        'SmartDashboard',
+      );
+
+      expect(smartDashboardTile, findsOneWidget);
+
+      await widgetTester.tap(smartDashboardTile);
+      await widgetTester.pumpAndSettle();
+
+      final veryLongTile = find.widgetWithText(TreeTile, 'Very Long',);
+      await widgetTester.tap(veryLongTile);
+      await widgetTester.pumpAndSettle();
+
+      final expandedTile = find.widgetWithText(TreeTile, 'Expanded');
+      await widgetTester.tap(expandedTile);
+      await widgetTester.pumpAndSettle();
+
+      final topicName = find.widgetWithText(TreeTile, 'SuperCool Topic Name');
+      expect(topicName, findsOneWidget);
+
+      await widgetTester.drag(
+        topicName,
+        const Offset(100, 100),
+        kind: PointerDeviceKind.mouse,
+      );
+      await widgetTester.pumpAndSettle();
+      final dialogDragHandle = find.byIcon(Icons.drag_handle);
+      expect(dialogDragHandle, findsOneWidget);
+      await widgetTester.drag(dialogDragHandle, const Offset(300, -150));
+      await widgetTester.pumpAndSettle();
+      print("SHaredPref:" + preferences.getBool(PrefKeys.expandedWidgetNames).toString());
+      final widget = find.text('Very Long/Expanded/SuperCool Topic Name', skipOffstage: false);
+      print("WIDGET:" + widget.toString());
+      expect(widget, findsOneWidget);
+
+    });
+
 
     testWidgets('Add widget dialog (layouts)', (widgetTester) async {
       await pumpDashboardPage(

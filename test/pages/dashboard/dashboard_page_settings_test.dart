@@ -248,4 +248,15 @@ void main() {
       expect(preferences.getDouble(PrefKeys.gridDpiOverride), 1.25);
     });
   });
+
+  group('[Expanded Widget Names]:', () {
+    setUp(() async {
+      await preferences.setBool(PrefKeys.expandedWidgetNames, false);
+    });
+
+    test('Toggling to true changes the key', () async {
+      await dashboardModel.changeExpandedWidgetNames(true);
+      expect(preferences.getBool(PrefKeys.expandedWidgetNames), true);
+    });
+  });
 }
