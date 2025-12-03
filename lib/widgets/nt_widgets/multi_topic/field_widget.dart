@@ -480,7 +480,7 @@ class FieldWidgetModel extends MultiTopicNTWidgetModel {
 
 class FieldWidget extends NTWidget {
   static const String widgetType = 'Field';
-  TransformationController controller = TransformationController();
+  final TransformationController controller = TransformationController();
 
   FieldWidget({super.key});
 
@@ -584,31 +584,16 @@ class FieldWidget extends NTWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) => Stack(
-        alignment: AlignmentGeometry.center,
-        clipBehavior: Clip.none,
         children: [
-          // InteractiveViewer(
-          //   constrained: true,
-          //   maxScale: 10,
-          //   minScale: 1,
-          //
-          //   // panAxis: PanAxis.free,  ## talked about in comment
-          //   clipBehavior: Clip.none,
-          //   trackpadScrollCausesScale: true,
-          //   child: model.field.fieldImage
-          //
-          // ),
           InteractiveViewer(
             transformationController: controller,
-            alignment: Alignment.center,
             constrained: true,
             maxScale: 10,
             minScale: 1,
-
             panAxis: PanAxis.free,
             clipBehavior: Clip.hardEdge,
 
-            // trackpadScrollCausesScale: true,
+            trackpadScrollCausesScale: true,
             child: ListenableBuilder(
               listenable: Listenable.merge(listeners),
               builder: (context, child) {
@@ -640,15 +625,9 @@ class FieldWidget extends NTWidget {
                       alignment: Alignment.center,
                       children: [
                         SizedBox(
-                          height: 900,
-                          width: 1000,
-                          child: ClipRect(
-                            clipBehavior: Clip.hardEdge,
-                            child: Image(
-                              image: model.field.fieldImage.image,
-                              fit: BoxFit.scaleDown,
-                            ),
-                          ),
+                          height: constraints.maxHeight,
+                          width: constraints.maxWidth,
+                          child: model.field.fieldImage,
                         ),
                       ],
                     ),
@@ -661,7 +640,6 @@ class FieldWidget extends NTWidget {
             ignoring: true,
             child: InteractiveViewer(
               transformationController: controller,
-              alignment: Alignment.center,
               clipBehavior: Clip.none,
               child: ListenableBuilder(
                 listenable: Listenable.merge(listeners),

@@ -159,7 +159,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: const FieldWidget(),
+              child: FieldWidget(),
             ),
           ),
         ),
@@ -205,7 +205,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: const FieldWidget(),
+              child: FieldWidget(),
             ),
           ),
         ),
@@ -265,7 +265,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: const FieldWidget(),
+              child: FieldWidget(),
             ),
           ),
         ),
@@ -323,7 +323,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: const FieldWidget(),
+              child: FieldWidget(),
             ),
           ),
         ),
@@ -369,7 +369,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: const FieldWidget(),
+              child: FieldWidget(),
             ),
           ),
         ),
@@ -415,7 +415,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: const FieldWidget(),
+              child: FieldWidget(),
             ),
           ),
         ),
@@ -459,7 +459,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: const FieldWidget(),
+              child: FieldWidget(),
             ),
           ),
         ),
@@ -509,7 +509,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: const FieldWidget(),
+              child: FieldWidget(),
             ),
           ),
         ),
