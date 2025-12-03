@@ -481,7 +481,8 @@ class FieldWidgetModel extends MultiTopicNTWidgetModel {
 class FieldWidget extends NTWidget {
   static const String widgetType = 'Field';
   final TransformationController controller = TransformationController();
-
+  double _robotX = 0;
+  double _robotY = 0;
   FieldWidget({super.key});
 
   Widget _getTransformedFieldObject(
@@ -583,8 +584,67 @@ class FieldWidget extends NTWidget {
     }
 
     return LayoutBuilder(
-      builder: (context, constraints) => Stack(
+      builder: (context, constraints) {
+        Size size = Size(constraints.maxWidth, constraints.maxHeight);
+        FittedSizes fittedSizes = applyBoxFit(
+          BoxFit.contain,
+          model.field.fieldImageSize ?? const Size(0, 0),
+          size,
+        );
+        FittedSizes rotatedFittedSizes = applyBoxFit(
+          BoxFit.contain,
+          model.field.fieldImageSize?.rotateBy(
+            -radians(model.fieldRotation),
+          ) ??
+              const Size(0, 0),
+          size,
+        );
+        double scaleReduction =
+        (fittedSizes.destination.width / fittedSizes.source.width);
+        double rotatedScaleReduction =
+        (rotatedFittedSizes.destination.width /
+            rotatedFittedSizes.source.width);
+
+        if (scaleReduction.isNaN) {
+          scaleReduction = 0;
+        }
+        if (rotatedScaleReduction.isNaN) {
+          rotatedScaleReduction = 0;
+        }
+
+        Offset fittedCenter = fittedSizes.destination.toOffset / 2;
+        Offset fieldCenter = model.field.center;
+
+        return Stack(
         children: [
+          IgnorePointer(
+            ignoring: true,
+            child: InteractiveViewer(
+              transformationController: controller,
+                clipBehavior: Clip.none,
+                child: ListenableBuilder(
+                  listenable: Listenable.merge(listeners),
+                  builder: (context, child) => CustomPaint(
+                    size: fittedSizes.destination,
+                    painter: RobotLinePainter(
+                      center: fittedCenter,
+                      color: model.trajectoryColor,
+                      robotPosition: _getTrajectoryPointOffset(
+                        model,
+                        x: _robotX,
+                        y: _robotY,
+                        fieldCenter: fieldCenter,
+                        scaleReduction: scaleReduction,
+                      ),
+                      strokeWidth:
+                      model.trajectoryPointSize *
+                          model.field.pixelsPerMeterHorizontal *
+                          scaleReduction,
+                    ),
+                  ),
+                ),
+            ),
+          ),
           InteractiveViewer(
             transformationController: controller,
             constrained: true,
@@ -596,28 +656,7 @@ class FieldWidget extends NTWidget {
             trackpadScrollCausesScale: true,
             child: ListenableBuilder(
               listenable: Listenable.merge(listeners),
-              builder: (context, child) {
-                Size size = Size(constraints.maxWidth, constraints.maxHeight);
-                FittedSizes fittedSizes = applyBoxFit(
-                  BoxFit.contain,
-                  model.field.fieldImageSize ?? const Size(0, 0),
-                  size,
-                );
-
-                FittedSizes rotatedFittedSizes = applyBoxFit(
-                  BoxFit.contain,
-                  model.field.fieldImageSize?.rotateBy(
-                        -radians(model.fieldRotation),
-                      ) ??
-                      const Size(0, 0),
-                  size,
-                );
-                double scaleReduction =
-                    (fittedSizes.destination.width / fittedSizes.source.width);
-                double rotatedScaleReduction =
-                    (rotatedFittedSizes.destination.width /
-                    rotatedFittedSizes.source.width);
-                return Transform.scale(
+              builder: (context, child) => Transform.scale(
                   scale: scaleReduction / rotatedScaleReduction,
                   child: Transform.rotate(
                     angle: radians(model.fieldRotation),
@@ -632,8 +671,7 @@ class FieldWidget extends NTWidget {
                       ],
                     ),
                   ),
-                );
-              },
+                ),
             ),
           ),
           IgnorePointer(
@@ -674,42 +712,9 @@ class FieldWidget extends NTWidget {
                       robotTheta = radians(robotPosition[2]);
                     }
                   }
-
-                  Size size = Size(constraints.maxWidth, constraints.maxHeight);
-
+                  _robotX = robotX;
+                  _robotY = robotY;
                   model.widgetSize = size;
-
-                  FittedSizes fittedSizes = applyBoxFit(
-                    BoxFit.contain,
-                    model.field.fieldImageSize ?? const Size(0, 0),
-                    size,
-                  );
-
-                  FittedSizes rotatedFittedSizes = applyBoxFit(
-                    BoxFit.contain,
-                    model.field.fieldImageSize?.rotateBy(
-                          -radians(model.fieldRotation),
-                        ) ??
-                        const Size(0, 0),
-                    size,
-                  );
-
-                  Offset fittedCenter = fittedSizes.destination.toOffset / 2;
-                  Offset fieldCenter = model.field.center;
-
-                  double scaleReduction =
-                      (fittedSizes.destination.width /
-                      fittedSizes.source.width);
-                  double rotatedScaleReduction =
-                      (rotatedFittedSizes.destination.width /
-                      rotatedFittedSizes.source.width);
-
-                  if (scaleReduction.isNaN) {
-                    scaleReduction = 0;
-                  }
-                  if (rotatedScaleReduction.isNaN) {
-                    rotatedScaleReduction = 0;
-                  }
 
                   if (!model.rendered &&
                       model.widgetSize != null &&
@@ -939,7 +944,8 @@ class FieldWidget extends NTWidget {
             ),
           ),
         ],
-      ),
+      );
+      },
     );
   }
 }
@@ -1017,4 +1023,35 @@ class TrajectoryPainter extends CustomPainter {
       oldDelegate.points != points ||
       oldDelegate.strokeWidth != strokeWidth ||
       oldDelegate.color != color;
+}
+
+class RobotLinePainter extends CustomPainter {
+  final Offset center;
+  final double strokeWidth;
+  final Color color;
+  Offset robotPosition;
+
+  RobotLinePainter({
+    required this.center,
+    required this.strokeWidth,
+    required this.robotPosition,
+    this.color = Colors.white,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint linePaint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    Offset paintedPos = Offset(robotPosition.dx + center.dx, robotPosition.dy + center.dy);
+    canvas.drawLine(center, paintedPos, linePaint);
+  }
+
+  @override
+  bool shouldRepaint(RobotLinePainter oldDelegate) =>
+      oldDelegate.strokeWidth != strokeWidth ||
+      oldDelegate.color != color ||
+      oldDelegate.robotPosition != robotPosition;
 }
