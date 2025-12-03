@@ -588,7 +588,7 @@ class FieldWidget extends NTWidget {
           InteractiveViewer(
             transformationController: controller,
             constrained: true,
-            maxScale: 10,
+            maxScale: 3,
             minScale: 1,
             panAxis: PanAxis.free,
             clipBehavior: Clip.hardEdge,
