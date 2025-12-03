@@ -587,6 +587,8 @@ class FieldWidget extends NTWidget {
         maxScale: 10,
         minScale: 1,
 
+        // panAxis: PanAxis.free,  ## talked about in comment
+        // clipBehavior: Clip.none,
         trackpadScrollCausesScale: true,
         child: ListenableBuilder(
           listenable: Listenable.merge(listeners),
