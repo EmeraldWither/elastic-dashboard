@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -616,46 +617,45 @@ class FieldWidget extends NTWidget {
         Offset fittedCenter = fittedSizes.destination.toOffset / 2;
         Offset fieldCenter = model.field.center;
         return Stack(
+
           children: [
+            //line going towards robot when off-screen
             IgnorePointer(
-              ignoring: true,
-              child: InteractiveViewer(
-                transformationController: controller,
-                clipBehavior: Clip.none,
-                child: ListenableBuilder(
-                  listenable: Listenable.merge(listeners),
-                  builder: (context, child) => Transform.scale(
-                    scale: rotatedScaleReduction / scaleReduction,
-                    child: Transform.rotate(
-                      angle: radians(model.fieldRotation),
-                      child: Stack(
-                        children: [
-                          CustomPaint(
-                            size: fittedSizes.destination,
-                            painter: RobotLinePainter(
-                              fittedCenter: fittedSizes.destination,
-                              size: size,
-                              color: model.robotColor.withAlpha(150),
-                              robotPosition: _getTrajectoryPointOffset(
-                                model,
-                                x: _robotX,
-                                y: _robotY,
-                                fieldCenter: fieldCenter,
-                                scaleReduction: scaleReduction,
-                              ),
-                              strokeWidth:
-                                  model.trajectoryPointSize *
-                                  model.field.pixelsPerMeterHorizontal *
-                                  scaleReduction,
+              child: ListenableBuilder(
+                listenable: Listenable.merge(listeners),
+                builder: (context, child) => Transform.scale(
+                  scale: rotatedScaleReduction / scaleReduction,
+                  child: Transform.rotate(
+                    angle: radians(model.fieldRotation),
+                    child: Stack(
+                      children: [
+                        CustomPaint(
+                          size: fittedSizes.destination,
+                          painter: RobotLinePainter(
+                            fittedCenter: fittedSizes.destination,
+                            size: size,
+                            color: model.robotColor.withAlpha(150),
+                            transform: controller.value,
+                            robotPosition: _getTrajectoryPointOffset(
+                              model,
+                              x: _robotX,
+                              y: _robotY,
+                              fieldCenter: fieldCenter,
+                              scaleReduction: scaleReduction,
                             ),
+                            strokeWidth:
+                            model.trajectoryPointSize *
+                                model.field.pixelsPerMeterHorizontal *
+                                scaleReduction,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
+            //pannable field widget
             InteractiveViewer(
               transformationController: controller,
               constrained: true,
@@ -685,6 +685,7 @@ class FieldWidget extends NTWidget {
                 ),
               ),
             ),
+            //robot, trajectories overlay
             IgnorePointer(
               ignoring: true,
               child: InteractiveViewer(
@@ -956,6 +957,7 @@ class FieldWidget extends NTWidget {
                 ),
               ),
             ),
+
           ],
         );
       },
@@ -1043,6 +1045,7 @@ class RobotLinePainter extends CustomPainter {
   final Color color;
   final Size fittedCenter;
   final Size size;
+  final Matrix4 transform;
   Offset robotPosition;
 
   RobotLinePainter({
@@ -1051,6 +1054,7 @@ class RobotLinePainter extends CustomPainter {
     required this.color,
     required this.fittedCenter,
     required this.size,
+    required this.transform
   });
 
   @override
@@ -1065,13 +1069,17 @@ class RobotLinePainter extends CustomPainter {
       robotPosition.dx + (size.width / 2),
       robotPosition.dy + (size.height / 2),
     );
+    Offset start = Offset(
+      size.width / 2,
+      size.height / 2
+    );
 
     drawDashedLine(
       canvas: canvas,
-      p1: size.toOffset / 2,
-      p2: robotPos,
-      dashWidth: 10,
-      dashSpace: 15,
+      p1: start,
+      p2: MatrixUtils.transformPoint(transform, robotPos),
+      dashWidth: 5,
+      dashSpace: 10,
       paint: linePaint,
     );
   }
