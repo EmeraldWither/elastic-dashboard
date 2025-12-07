@@ -635,6 +635,7 @@ class FieldWidget extends NTWidget {
                             painter: RobotLinePainter(
                               fittedCenter: fittedSizes.destination,
                               size: size,
+                              color: model.robotColor.withAlpha(150),
                               robotPosition: _getTrajectoryPointOffset(
                                 model,
                                 x: _robotX,
@@ -1047,7 +1048,7 @@ class RobotLinePainter extends CustomPainter {
   RobotLinePainter({
     required this.strokeWidth,
     required this.robotPosition,
-    this.color = Colors.grey,
+    required this.color,
     required this.fittedCenter,
     required this.size,
   });
@@ -1083,14 +1084,12 @@ class RobotLinePainter extends CustomPainter {
     required int dashSpace,
     required Paint paint,
   }) {
-    // Get normalized distance vector from p1 to p2
     var dx = p2.dx - p1.dx;
     var dy = p2.dy - p1.dy;
     final magnitude = sqrt(dx * dx + dy * dy);
     dx = dx / magnitude;
     dy = dy / magnitude;
 
-    // Compute number of dash segments
     final steps = magnitude ~/ (dashWidth + dashSpace);
 
     var startX = p1.dx;
