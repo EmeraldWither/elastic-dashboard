@@ -34,7 +34,7 @@ To generate mock classes needed for tests, run the command:
 dart run build_runner build
 ```
 
-To run all unit tests, either right click on the tests folder in Android Studio and hit `Run 'tests in tests'`, or run the command in the terminal:
+To execute all automated unit tests, run the command:
 ```bash
 flutter test .
 ```
@@ -54,15 +54,16 @@ flutter test .
 Next, lets ensure that all files are properly formatted according to the Dart formatting style-guide by running (note: you must be in the root directory of the Elastic repository) :
 ```bash
 dart format .
+dart run import_sorter:main
 ```
 Next, lets apply some automatic fixes by running:
 
 ```bash
 dart fix --apply
 ```
-However, this command can only fix some issues, and will not show issues that may exist, but that the tool itself cannot resolve. As such, we will run:
+However, this command can only fix some issues, and may not always show certain compiler or syntax errors. As such, we want to double check this, and we will run:
 ```bash
-dart analyze
+flutter analyze
 ```
 
 If no issues are found, you are good to go, however if issues are found, it is important to address them.
