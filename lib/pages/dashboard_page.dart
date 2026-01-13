@@ -1034,12 +1034,16 @@ class _DashboardPageState extends State<DashboardPage>
             onPressed: () {
               model.displayKeybindsHelpDialog(context);
             },
+            shortcut: const SingleActivator(
+              LogicalKeyboardKey.keyH,
+              control: true,
+            ),
             child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.keyboard),
                 SizedBox(width: 8),
-                Text('Keyboard Shortcuts'),
+                Text('Keybinds Help'),
               ],
             ),
           ),
