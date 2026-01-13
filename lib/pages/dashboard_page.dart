@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:elastic_dashboard/pages/dashboard/add_widget_dialog.dart';
+import 'package:elastic_dashboard/pages/dashboard/dashboard_keybinds_window.dart';
 import 'package:elastic_dashboard/pages/dashboard/dashboard_page_footer.dart';
 import 'package:elastic_dashboard/pages/dashboard/dashboard_page_layouts.dart';
 import 'package:elastic_dashboard/pages/dashboard/dashboard_page_notifications.dart';
@@ -490,6 +491,8 @@ abstract class DashboardPageViewModel extends ChangeNotifier {
     double? width,
     double? height,
   }) {}
+
+  void displayKeybindsHelpDialog(BuildContext context) {}
 }
 
 class DashboardPageViewModelImpl = DashboardPageViewModel
@@ -498,7 +501,8 @@ class DashboardPageViewModelImpl = DashboardPageViewModel
         DashboardPageLayouts,
         DashboardPageSettings,
         DashboardPageTabs,
-        DashboardPageWindow;
+        DashboardPageWindow,
+        DashboardPageKeybinds;
 
 class DashboardPage extends StatefulWidget {
   final DashboardPageViewModel model;
@@ -577,40 +581,17 @@ class _DashboardPageState extends State<DashboardPage>
 
   void _setupShortcuts() {
     logger.info('Setting up shortcuts');
-    // Import Layout (Ctrl + O)
-    hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.keyO, modifiers: [KeyModifier.control]),
-      callback: model.importLayout,
-    );
-    // Save (Ctrl + S)
-    hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.keyS, modifiers: [KeyModifier.control]),
-      callback: model.saveLayout,
-    );
-    // Export (Ctrl + Shift + S)
-    hotKeyManager.register(
-      HotKey(
-        LogicalKeyboardKey.keyS,
-        modifiers: [KeyModifier.control, KeyModifier.shift],
-      ),
-      callback: model.exportLayout,
-    );
-    // Download from robot (Ctrl + D)
-    hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.keyD, modifiers: [KeyModifier.control]),
-      callback: () {
-        if (preferences.getBool(PrefKeys.layoutLocked) ??
-            Defaults.layoutLocked) {
-          return;
-        }
-
-        model.loadLayoutFromRobot();
-      },
-    );
     // Switch to Tab (Ctrl + Tab #)
     for (int i = 1; i <= 9; i++) {
       hotKeyManager.register(
-        HotKey(LogicalKeyboardKey(48 + i), modifiers: [KeyModifier.control]),
+        //we tell these hotkeys to not display on the keybinds, or else it clutters it up
+        HotKey(
+          LogicalKeyboardKey(48 + i),
+          'Switch to Tab $i',
+          HotkeyCategories.tabs,
+          display: false,
+          modifiers: [KeyModifier.control],
+        ),
         callback: () {
           if (model.currentTabIndex == i - 1) {
             logger.debug(
@@ -627,19 +608,41 @@ class _DashboardPageState extends State<DashboardPage>
         },
       );
     }
-    // Move to next tab (Ctrl + Tab)
+    //we register a dummy hotkey that ONLY displays on the keyboard shortcuts page
     hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.tab, modifiers: [KeyModifier.control]),
+      HotKey(
+        LogicalKeyboardKey.numberSign,
+        'Switch to Tab #',
+        HotkeyCategories.tabs,
+        modifiers: [KeyModifier.control],
+      ),
       callback: () {
         if (ModalRoute.of(context)?.isCurrent ?? false) {
           model.moveToNextTab();
         }
       },
     );
+    // Move to next tab (Ctrl + Tab)
+    hotKeyManager.register(
+      HotKey(
+        LogicalKeyboardKey.tab,
+        'Move to Next Tab',
+        HotkeyCategories.tabs,
+        modifiers: [KeyModifier.control],
+      ),
+      callback: () {
+        if (ModalRoute.of(context)?.isCurrent ?? false) {
+          model.moveToNextTab();
+        }
+      },
+    );
+
     // Move to prevoius tab (Ctrl + Shift + Tab)
     hotKeyManager.register(
       HotKey(
         LogicalKeyboardKey.tab,
+        'Move to Previous Tab',
+        HotkeyCategories.tabs,
         modifiers: [KeyModifier.control, KeyModifier.shift],
       ),
       callback: () {
@@ -650,7 +653,12 @@ class _DashboardPageState extends State<DashboardPage>
     );
     // Move Tab Left (Ctrl + <-)
     hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.arrowLeft, modifiers: [KeyModifier.control]),
+      HotKey(
+        LogicalKeyboardKey.arrowLeft,
+        'Move Tab Left',
+        HotkeyCategories.tabs,
+        modifiers: [KeyModifier.control],
+      ),
       callback: () {
         if (ModalRoute.of(context)?.isCurrent ?? false) {
           model.moveTabLeft();
@@ -659,7 +667,12 @@ class _DashboardPageState extends State<DashboardPage>
     );
     // Move Tab Right (Ctrl + ->)
     hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.arrowRight, modifiers: [KeyModifier.control]),
+      HotKey(
+        LogicalKeyboardKey.arrowRight,
+        'Move Tab Right',
+        HotkeyCategories.tabs,
+        modifiers: [KeyModifier.control],
+      ),
       callback: () {
         if (ModalRoute.of(context)?.isCurrent ?? false) {
           model.moveTabRight();
@@ -668,7 +681,12 @@ class _DashboardPageState extends State<DashboardPage>
     );
     // New Tab (Ctrl + T)
     hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.keyT, modifiers: [KeyModifier.control]),
+      HotKey(
+        LogicalKeyboardKey.keyT,
+        'New Tab',
+        HotkeyCategories.tabs,
+        modifiers: [KeyModifier.control],
+      ),
       callback: () {
         if (preferences.getBool(PrefKeys.layoutLocked) ??
             Defaults.layoutLocked) {
@@ -693,7 +711,12 @@ class _DashboardPageState extends State<DashboardPage>
     );
     // Close Tab (Ctrl + W)
     hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.keyW, modifiers: [KeyModifier.control]),
+      HotKey(
+        LogicalKeyboardKey.keyW,
+        'Close Tab',
+        HotkeyCategories.tabs,
+        modifiers: [KeyModifier.control],
+      ),
       callback: () {
         if (preferences.getBool(PrefKeys.layoutLocked) ??
             Defaults.layoutLocked) {
@@ -721,9 +744,75 @@ class _DashboardPageState extends State<DashboardPage>
         });
       },
     );
+    // Import Layout (Ctrl + O)
+    hotKeyManager.register(
+      HotKey(
+        LogicalKeyboardKey.keyO,
+        'Import Layout',
+        HotkeyCategories.layout,
+        modifiers: [KeyModifier.control],
+      ),
+      callback: model.importLayout,
+    );
+    // Save (Ctrl + S)
+    hotKeyManager.register(
+      HotKey(
+        LogicalKeyboardKey.keyS,
+        'Save Layout',
+        HotkeyCategories.layout,
+        modifiers: [KeyModifier.control],
+      ),
+      callback: model.saveLayout,
+    );
+    // Export (Ctrl + Shift + S)
+    hotKeyManager.register(
+      HotKey(
+        LogicalKeyboardKey.keyS,
+        'Export Layout',
+        HotkeyCategories.layout,
+        modifiers: [KeyModifier.control, KeyModifier.shift],
+      ),
+      callback: model.exportLayout,
+    );
+    // Download from robot (Ctrl + D)
+    hotKeyManager.register(
+      HotKey(
+        LogicalKeyboardKey.keyD,
+        'Download Layout from Robot',
+        HotkeyCategories.layout,
+        modifiers: [KeyModifier.control],
+      ),
+      callback: () {
+        if (preferences.getBool(PrefKeys.layoutLocked) ??
+            Defaults.layoutLocked) {
+          return;
+        }
+
+        model.loadLayoutFromRobot();
+      },
+    );
     // Open settings dialog (Ctrl + ,)
     hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.comma, modifiers: [KeyModifier.control]),
+      HotKey(
+        LogicalKeyboardKey.comma,
+        'Open Settings Dialog',
+        HotkeyCategories.misc,
+        modifiers: [KeyModifier.control],
+      ),
+      callback: () {
+        if ((ModalRoute.of(context)?.isCurrent ?? false) && mounted) {
+          model.displaySettingsDialog(context);
+        }
+      },
+    );
+    // Open keybind help dialog (Ctrl + H)
+    hotKeyManager.register(
+      HotKey(
+        LogicalKeyboardKey.comma,
+        'Open Keybind Help Dialog',
+        HotkeyCategories.misc,
+        modifiers: [KeyModifier.control],
+      ),
       callback: () {
         if ((ModalRoute.of(context)?.isCurrent ?? false) && mounted) {
           model.displaySettingsDialog(context);
@@ -732,7 +821,12 @@ class _DashboardPageState extends State<DashboardPage>
     );
     // Connect to robot (Ctrl + K)
     hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.keyK, modifiers: [KeyModifier.control]),
+      HotKey(
+        LogicalKeyboardKey.keyK,
+        'Connect to Robot',
+        HotkeyCategories.connection,
+        modifiers: [KeyModifier.control],
+      ),
       callback: () {
         if (preferences.getInt(PrefKeys.ipAddressMode) ==
             IPAddressMode.driverStation.index) {
@@ -750,6 +844,8 @@ class _DashboardPageState extends State<DashboardPage>
     hotKeyManager.register(
       HotKey(
         LogicalKeyboardKey.keyK,
+        'Connect to Sim',
+        HotkeyCategories.connection,
         modifiers: [KeyModifier.control, KeyModifier.shift],
       ),
       callback: () {
@@ -932,6 +1028,22 @@ class _DashboardPageState extends State<DashboardPage>
               ],
             ),
           ),
+          // Keybinds
+          MenuItemButton(
+            style: menuButtonStyle,
+            onPressed: () {
+              model.displayKeybindsHelpDialog(context);
+            },
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.keyboard),
+                SizedBox(width: 8),
+                Text('Keyboard Shortcuts'),
+              ],
+            ),
+          ),
+
           // Check for Updates (not for WPILib distribution)
           if (!isWPILib)
             MenuItemButton(
