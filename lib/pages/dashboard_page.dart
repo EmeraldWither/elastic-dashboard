@@ -808,14 +808,14 @@ class _DashboardPageState extends State<DashboardPage>
     // Open keybind help dialog (Ctrl + H)
     hotKeyManager.register(
       HotKey(
-        LogicalKeyboardKey.comma,
+        LogicalKeyboardKey.keyH,
         'Open Keybind Help Dialog',
         HotkeyCategories.misc,
         modifiers: [KeyModifier.control],
       ),
       callback: () {
         if ((ModalRoute.of(context)?.isCurrent ?? false) && mounted) {
-          model.displaySettingsDialog(context);
+          model.displayKeybindsHelpDialog(context);
         }
       },
     );
