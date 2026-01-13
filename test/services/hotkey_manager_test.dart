@@ -21,7 +21,7 @@ void main() {
     MockShortcutCallback mockCallback = MockShortcutCallback();
 
     hotKeyManager.register(
-      HotKey(LogicalKeyboardKey.keyA),
+      HotKey(LogicalKeyboardKey.keyA, 'Test Key', 'Test Category'),
       callback: mockCallback.callback,
     );
 
@@ -46,7 +46,7 @@ void main() {
 
     hotKeyManager.register(
       HotKey(
-        LogicalKeyboardKey.keyA,
+        LogicalKeyboardKey.keyA, 'Test Key', 'Test Category',
         modifiers: [KeyModifier.control, KeyModifier.shift, KeyModifier.alt],
       ),
       callback: mockCallback.callback,
