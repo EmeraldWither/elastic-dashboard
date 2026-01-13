@@ -38,21 +38,37 @@ class _KeybindsDialogState extends State<KeybindsDialog> {
     /// Builds the entire page for the keybinds based on all the provided caterogies which contains keybinds
     List<Widget> keybindWidgets = [];
     for (DisplayableKeybindCategory keybindCategory in keybinds) {
-      keybindWidgets.add(_buildKeyBindCategory(keybindCategory));
+      keybindWidgets.add(
+        KeybindCategoryWidget(
+          name: keybindCategory.name,
+          keybinds: keybindCategory.keybinds,
+        ),
+      );
     }
     return [
       ...keybindWidgets,
     ];
   }
+}
 
-  Widget _buildKeyBindCategory(DisplayableKeybindCategory category) {
-    /// Builds a list of keybinds for a category with the name of the category
+class KeybindCategoryWidget extends StatelessWidget {
+  final String name;
+  final List<DisplayableHotkey> keybinds;
+
+  const KeybindCategoryWidget({
+    super.key,
+    required this.name,
+    required this.keybinds,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     List<Widget> keybindWidgets = [];
-    for (int i = 0; i < category.keybinds.length; i++) {
+    for (int i = 0; i < keybinds.length; i++) {
       keybindWidgets.add(
-        _buildFullKeybindWidget(
-          category.keybinds[i].keys,
-          category.keybinds[i].description,
+        KeybindWidget(
+          keys: keybinds[i].keys,
+          description: keybinds[i].description,
         ),
       );
     }
@@ -62,18 +78,30 @@ class _KeybindsDialogState extends State<KeybindsDialog> {
         direction: Axis.vertical,
         spacing: 4,
         children: [
-          Text(category.name, style: Theme.of(context).textTheme.titleMedium),
+          Text(name, style: Theme.of(context).textTheme.titleMedium),
           ...keybindWidgets,
         ],
       ),
     );
   }
+}
 
-  Widget _buildFullKeybindWidget(List<String> keys, String description) {
+class KeybindWidget extends StatelessWidget {
+  final List<String> keys;
+  final String description;
+
+  const KeybindWidget({
+    super.key,
+    required this.keys,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     /// Builds a single keybind entry, showing the keys and the description
     List<Widget> keybindChips = [];
     for (int i = 0; i < keys.length; i++) {
-      keybindChips.add(_buildSingleKeybindChip(keys[i]));
+      keybindChips.add(_buildSingleChip(context, keys[i]));
       if (i < keys.length - 1) {
         //the "+" between keys
         keybindChips.add(
@@ -104,7 +132,7 @@ class _KeybindsDialogState extends State<KeybindsDialog> {
     return Row(mainAxisSize: MainAxisSize.min, children: keybindChips);
   }
 
-  Widget _buildSingleKeybindChip(String text) => Chip(
+  Widget _buildSingleChip(BuildContext context, String text) => Chip(
     label: Text(text),
     padding: EdgeInsets.all(2),
     labelStyle: Theme.of(context).textTheme.bodySmall,
