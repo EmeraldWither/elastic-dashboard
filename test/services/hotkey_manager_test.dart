@@ -46,7 +46,9 @@ void main() {
 
     hotKeyManager.register(
       HotKey(
-        LogicalKeyboardKey.keyA, 'Test Key', 'Test Category',
+        LogicalKeyboardKey.keyA,
+        'Test Key',
+        'Test Category',
         modifiers: [KeyModifier.control, KeyModifier.shift, KeyModifier.alt],
       ),
       callback: mockCallback.callback,

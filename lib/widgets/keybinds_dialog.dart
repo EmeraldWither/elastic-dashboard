@@ -1,11 +1,15 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 
-import 'package:elastic_dashboard/pages/dashboard/dashboard_keybinds_window.dart';
+import 'package:collection/collection.dart';
+
+import '../services/hotkey_manager.dart';
 
 class KeybindsDialog extends StatefulWidget {
-  final List<DisplayableKeybindCategory> keybindCategories;
+  final List<HotKey> hotkeys;
 
-  const KeybindsDialog({super.key, required this.keybindCategories});
+  const KeybindsDialog({super.key, required this.hotkeys});
 
   @override
   State<KeybindsDialog> createState() => _KeybindsDialogState();
@@ -21,7 +25,9 @@ class _KeybindsDialogState extends State<KeybindsDialog> {
       width: 350,
       child: Wrap(
         direction: Axis.horizontal,
-        children: _buildFullKeyBindList(widget.keybindCategories),
+        children: _buildFullKeyBindList(
+          KeybindsUtils.convertHotkeysToDisplayKeybinds(widget.hotkeys),
+        ),
       ),
     ),
     actions: [
@@ -138,4 +144,85 @@ class KeybindWidget extends StatelessWidget {
     labelStyle: Theme.of(context).textTheme.bodySmall,
     // backgroundColor: Theme.of(context).cardColor,
   );
+}
+
+class DisplayableKeybindCategory {
+  final String name;
+  final List<DisplayableHotkey> keybinds;
+
+  DisplayableKeybindCategory(this.name, this.keybinds);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is DisplayableKeybindCategory &&
+        name == other.name &&
+        const ListEquality<DisplayableHotkey>().equals(
+          keybinds,
+          other.keybinds,
+        );
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    name,
+    const ListEquality<DisplayableHotkey>().hash(keybinds),
+  );
+}
+
+class DisplayableHotkey {
+  final List<String> keys;
+  final String description;
+
+  DisplayableHotkey(this.keys, this.description);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is DisplayableHotkey &&
+        description == other.description &&
+        const ListEquality<String>().equals(keys, other.keys);
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    description,
+    const ListEquality<String>().hash(keys),
+  );
+}
+
+class KeybindsUtils {
+  static List<DisplayableKeybindCategory> convertHotkeysToDisplayKeybinds(
+    List<HotKey> hotkeys,
+  ) {
+    List<DisplayableKeybindCategory> convertedKeybinds = [];
+    HashMap<String, List<DisplayableHotkey>> keybindMap = HashMap();
+
+    for (var key in hotkeys) {
+      if (!key.display) continue;
+      DisplayableHotkey displayableHotkey = _fromHotkey(key);
+      if (!keybindMap.containsKey(key.category)) {
+        keybindMap[key.category] = [displayableHotkey];
+      } else {
+        keybindMap[key.category]!.add(displayableHotkey);
+      }
+    }
+    for (final entry in keybindMap.entries) {
+      final key = entry.key;
+      final value = entry.value;
+      convertedKeybinds.add(DisplayableKeybindCategory(key, value));
+    }
+    return convertedKeybinds;
+  }
+
+  static DisplayableHotkey _fromHotkey(HotKey key) {
+    List<String> keys = [];
+    if (key.modifiers != null) {
+      for (KeyModifier modifier in key.modifiers!) {
+        keys.add(modifier.displayName);
+      }
+    }
+    keys.add(key.logicalKey.keyLabel);
+    return DisplayableHotkey(keys, key.description);
+  }
 }
