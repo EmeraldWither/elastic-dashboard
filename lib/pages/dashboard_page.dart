@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:elastic_dashboard/widgets/keybinds_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,6 +34,7 @@ import 'package:elastic_dashboard/util/tab_data.dart';
 import 'package:elastic_dashboard/util/test_utils.dart';
 import 'package:elastic_dashboard/widgets/custom_appbar.dart';
 import 'package:elastic_dashboard/widgets/editable_tab_bar.dart';
+import 'package:elastic_dashboard/widgets/keybinds_dialog.dart';
 import 'package:elastic_dashboard/widgets/tab_grid.dart';
 
 import 'package:elastic_dashboard/util/stub/unload_handler_stub.dart'
