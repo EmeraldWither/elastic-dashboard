@@ -6,12 +6,11 @@ This document provides a set of guidelines to help you contribute to the project
 
 ## Ways to Contribute
 
-
 - **Bug Reports:** If you encounter a bug, please open a [Bug Report Issue](https://github.com/Gold87/elastic_dashboard/issues/new?assignees=&labels=bug&projects=&template=bug_report.md) on the project issue tracker.
 - **Suggesting Enhancements:** If you have an idea for a new feature or an improvement to an existing one, feel free to open a [Feature Request Issue](https://github.com/Gold87/elastic_dashboard/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md).
 - **Code Contributions:** If you'd like to fix a bug or implement a feature, please follow the workflow described below.
 
-## Development Workflow
+## Contribution Workflow
 
 To ensure a standardized process, please follow this development workflow:
 

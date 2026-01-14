@@ -21,7 +21,6 @@ Elastic is a simple and modern FRC dashboard made by Nadav from FRC Team 353. It
 ## Documentation
 View the online documentation [here](https://frc-elastic.gitbook.io/docs)
 
-## Building
 ## Building and Contributing
 View the instructions for building code and making contributions to the project in the [CONTRIBUTING.md](CONTRIBUTING.md) file
 
