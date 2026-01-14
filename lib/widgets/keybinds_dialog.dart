@@ -4,18 +4,13 @@ import 'package:flutter/material.dart';
 
 import 'package:collection/collection.dart';
 
-import '../services/hotkey_manager.dart';
+import 'package:elastic_dashboard/services/hotkey_manager.dart';
 
-class KeybindsDialog extends StatefulWidget {
+class KeybindsDialog extends StatelessWidget {
   final List<HotKey> hotkeys;
 
   const KeybindsDialog({super.key, required this.hotkeys});
 
-  @override
-  State<KeybindsDialog> createState() => _KeybindsDialogState();
-}
-
-class _KeybindsDialogState extends State<KeybindsDialog> {
   @override
   Widget build(BuildContext context) => AlertDialog(
     title: Column(
@@ -26,7 +21,7 @@ class _KeybindsDialogState extends State<KeybindsDialog> {
       child: Wrap(
         direction: Axis.horizontal,
         children: _buildFullKeyBindList(
-          KeybindsUtils.convertHotkeysToDisplayKeybinds(widget.hotkeys),
+          KeybindsUtils.convertHotkeysToDisplayKeybinds(hotkeys),
         ),
       ),
     ),

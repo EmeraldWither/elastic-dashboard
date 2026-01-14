@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:elastic_dashboard/widgets/keybinds_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +16,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:elastic_dashboard/pages/dashboard/add_widget_dialog.dart';
-import 'package:elastic_dashboard/pages/dashboard/dashboard_keybinds_window.dart';
 import 'package:elastic_dashboard/pages/dashboard/dashboard_page_footer.dart';
 import 'package:elastic_dashboard/pages/dashboard/dashboard_page_layouts.dart';
 import 'package:elastic_dashboard/pages/dashboard/dashboard_page_notifications.dart';
@@ -492,7 +492,14 @@ abstract class DashboardPageViewModel extends ChangeNotifier {
     double? height,
   }) {}
 
-  void displayKeybindsHelpDialog(BuildContext context) {}
+  void displayKeybindsHelpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => KeybindsDialog(
+        hotkeys: hotKeyManager.registeredHotKeyList,
+      ),
+    );
+  }
 }
 
 class DashboardPageViewModelImpl = DashboardPageViewModel
@@ -501,8 +508,7 @@ class DashboardPageViewModelImpl = DashboardPageViewModel
         DashboardPageLayouts,
         DashboardPageSettings,
         DashboardPageTabs,
-        DashboardPageWindow,
-        DashboardPageKeybinds;
+        DashboardPageWindow;
 
 class DashboardPage extends StatefulWidget {
   final DashboardPageViewModel model;
@@ -616,11 +622,7 @@ class _DashboardPageState extends State<DashboardPage>
         HotkeyCategories.tabs,
         modifiers: [KeyModifier.control],
       ),
-      callback: () {
-        if (ModalRoute.of(context)?.isCurrent ?? false) {
-          model.moveToNextTab();
-        }
-      },
+      callback: () {},
     );
     // Move to next tab (Ctrl + Tab)
     hotKeyManager.register(
