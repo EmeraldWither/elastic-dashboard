@@ -26,7 +26,7 @@ void main() {
   final Map<String, dynamic> fieldWidgetJson = {
     'topic': 'Test/Field',
     'period': 0.100,
-    'field_game': 'Reefscape',
+    'field_game': 'Rebuilt',
     'robot_width': 1.0,
     'robot_length': 1.0,
     'show_other_objects': true,
@@ -130,7 +130,7 @@ void main() {
       preferences: preferences,
       period: 0.100,
       topic: 'Test/Field',
-      fieldGame: 'Reefscape',
+      fieldGame: 'Rebuilt',
       showOtherObjects: true,
       showTrajectories: true,
       robotWidthMeters: 1.0,
@@ -163,7 +163,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: FieldWidget(),
+              child: const FieldWidget(),
             ),
           ),
         ),
@@ -209,7 +209,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: FieldWidget(),
+              child: const FieldWidget(),
             ),
           ),
         ),
@@ -269,7 +269,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: FieldWidget(),
+              child: const FieldWidget(),
             ),
           ),
         ),
@@ -327,7 +327,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: FieldWidget(),
+              child: const FieldWidget(),
             ),
           ),
         ),
@@ -373,7 +373,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: FieldWidget(),
+              child: const FieldWidget(),
             ),
           ),
         ),
@@ -419,7 +419,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: FieldWidget(),
+              child: const FieldWidget(),
             ),
           ),
         ),
@@ -463,7 +463,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: FieldWidget(),
+              child: const FieldWidget(),
             ),
           ),
         ),
@@ -513,7 +513,7 @@ void main() {
           home: Scaffold(
             body: ChangeNotifierProvider<NTWidgetModel>.value(
               value: fieldWidgetModel,
-              child: FieldWidget(),
+              child: const FieldWidget(),
             ),
           ),
         ),
@@ -534,7 +534,7 @@ void main() {
       preferences: preferences,
       period: 0.100,
       topic: 'Test/Field',
-      fieldGame: 'Reefscape',
+      fieldGame: 'Rebuilt',
       showOtherObjects: true,
       showTrajectories: true,
       robotWidthMeters: 1.0,
